@@ -5,3 +5,4 @@ def clientMain():
     clientSocket.connect((serverName, serverPort))
 
 clientMain()
+#test
