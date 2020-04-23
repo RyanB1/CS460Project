@@ -2,14 +2,53 @@ from socket import *
 
 #def playGame(clientSocket):
     
-#def personalBest(clientSocket):
+def personalBest(clientSocket):
+    serverMsg = "checkIndividual"
+    clientSocket.send(serverMsg.encode())
+    response = clientSocket.recv(1024).decode("ascii")
 
-#def allScores(clientSocket):
+    if response.split("\t")[0].strip() != "checkIndividual":
+        print("Error getting record.")
+        return
+    
+    print("Your personal best is:",response.split("\t")[1].strip(),"points\n")
 
-#def bestOverall(clientSocket):
+def allScores(clientSocket):
+    serverMsg = "checkAll"
+    clientSocket.send(serverMsg.encode())
+    response = clientSocket.recv(1024).decode("ascii")
+    responseList = response.split("\n")
 
-#def specificPlayer(clientSocket):
+    if response.split("\t")[0].strip() != "checkAll":
+        print("Error getting record.")
+        return
 
+    print("Scores for all players:\n")
+    for line in range(1,len(responseList)-1):
+        print(responseList[line])
+    
+def bestOverall(clientSocket):
+    serverMsg = "checkBestAll"
+    clientSocket.send(serverMsg.encode())
+    response = clientSocket.recv(1024).decode("ascii")
+
+    if response.split("\t")[0].strip() != "checkBestAll":
+        print("Error getting record.")
+        return
+
+    print("The best overall score:",response.split("\t")[1].strip(),"points\n")
+    
+def specificPlayerBest(clientSocket):
+    user = input("Input a username to check the players best score: ")
+    serverMsg = "checkBestSpecific\t"+user
+    clientSocket.send(serverMsg.encode())
+    response = clientSocket.recv(1024).decode("ascii")
+    
+    if response.split("\t")[0].strip() != "checkBestSpecific":
+        print("Error getting record.")
+        return
+    
+    print("User "+user+" has a best score of:",response.split("\t")[1].strip(),"points\n")
 
 def clientMain():
     serverName = "localhost"
@@ -20,29 +59,31 @@ def clientMain():
     #Login
 
     #Choosing what player wants to do
-    print("""
-    1.Play Game
-    2.Check Your Best Score 
-    3.Check All Scores
-    4.Check Best Overall Score
-    5.Check Best Specific Player Score
-    6.Quit
-    """)
-    choice = int(input("Enter your choice: "))
-                 
-    if choice == 1:
-        playGame(clientSocket)
-    elif choice == 2:
-        personalBest(clientSocket)
-    elif choice == 3:
-        allScores(clientSocket)
-    elif choice == 4:
-        bestOverall(clientSocket)
-    elif choice == 5:
-        specificPlayer(clientSocket)
-    else:
-        print("Exiting the Program....")
-        clientSocket.close()
+    while True:
+        print("""
+        1.Play Game
+        2.Check Your Best Score 
+        3.Check All Scores
+        4.Check Best Overall Score
+        5.Check Specific Players' Best Score
+        6.Quit
+        """)
+        choice = int(input("Enter your choice: "))
+                     
+        if choice == 1:
+            playGame(clientSocket)
+        elif choice == 2:
+            personalBest(clientSocket)
+        elif choice == 3:
+            allScores(clientSocket)
+        elif choice == 4:
+            bestOverall(clientSocket)
+        elif choice == 5:
+            specificPlayerBest(clientSocket)
+        else:
+            print("Exiting the Program....")
+            clientSocket.close()
+            break
         
 clientMain()
 
