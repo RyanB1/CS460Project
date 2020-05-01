@@ -1,7 +1,58 @@
 from socket import * 
 
-#def playGame(clientSocket):
-
+def playGame(clientSocket):
+    points = numOfQuestions = 0
+    
+    while numOfQuestions != 5:
+        wrong = 3
+        serverMsg = "playGame\t"
+        clientSocket.send(serverMsg.encode())
+        question = clientSocket.recv(1024).decode("ascii")
+        
+        if question.split("\t")[0].strip() != "playGame":
+            print("Error receiving question.")
+            return
+        
+        print(question.split("\t")[1].strip()+"\n")
+        numOfAnswers = int(float(question.split("\t")[2].strip()))
+        
+        while True:
+            answer = input("Enter an Answer: ")
+            clientSocket.send(answer.encode())
+            response = clientSocket.recv(1024).decode("ascii")
+            
+            if response.split("\t")[0].strip() == answer:
+               print("You got an answer correct. You Earned",response.split("\t")[1].strip(),"points.")
+               points += int(response.split("\t")[1].strip())
+               numOfAnswers-=1
+               
+               if numOfAnswers == 0:
+                   print("You got all answers correct for this question.")
+                   print("Point Total:",points)
+                   print("New Question is loading...\n\n")
+                   numOfQuestions+=1
+                   if numOfQuestions == 5:
+                       print("Game over! You have earned a total of",points,"points.")
+                       break
+                   clientSocket.send("NextQuestion".encode())
+                   break
+                
+               print(numOfAnswers,"answers left to guess.\n") 
+                
+            elif response.split("\t")[0].strip() == "Incorrect":
+               wrong-=1
+               if(wrong == 0):
+                   print("Point Total:",points)
+                   print("You have run out of chances. New question loading...\n\n")
+                   numOfQuestions+=1
+                   if numOfQuestions == 5:
+                       print("Game over! You have earned a total of",points,"points.")
+                       break
+                   clientSocket.send("NextQuestion".encode())
+                   break
+               
+               print("You answered incorrectly. You have",wrong,"chance(s) left\n")
+       
 def login(clientSocket):
     username = input("Input your username: ")
     password = input("Input your password: ")
@@ -19,52 +70,27 @@ def alreadyRegistered(clientSocket):
     register(clientSocket)
     
 def personalBest(clientSocket):
-    serverMsg = "checkIndividual"
+    serverMsg = "CheckIndBestRecord\t"
     clientSocket.send(serverMsg.encode())
     response = clientSocket.recv(1024).decode("ascii")
 
-    if response.split("\t")[0].strip() != "checkIndividual":
-        print("Error getting record.")
+    if response.split("\t")[0].strip() != "CheckIndBestRecord":
+        print("Error getting record.\n")
         return
     
     print("Your personal best is:",response.split("\t")[1].strip(),"points\n")
-
-def allScores(clientSocket):
-    serverMsg = "checkAll"
-    clientSocket.send(serverMsg.encode())
-    response = clientSocket.recv(1024).decode("ascii")
-    responseList = response.split("\n")
-
-    if response.split("\t")[0].strip() != "checkAll":
-        print("Error getting record.")
-        return
-
-    print("Scores for all players:\n")
-    for line in range(1,len(responseList)-1):
-        print(responseList[line])
     
 def bestOverall(clientSocket):
-    serverMsg = "checkBestAll"
+    serverMsg = "CheckBestRecord\t"
     clientSocket.send(serverMsg.encode())
     response = clientSocket.recv(1024).decode("ascii")
 
-    if response.split("\t")[0].strip() != "checkBestAll":
-        print("Error getting record.")
+    if response.split("\t")[0].strip() != "CheckBestRecord":
+        print("Error getting record.\n")
         return
 
-    print("The best overall score:",response.split("\t")[1].strip(),"points\n")
+    print("The best overall score is:",response.split("\t")[1].strip(),"points\n")
     
-def specificPlayerBest(clientSocket):
-    user = input("Input a username to check the players best score: ")
-    serverMsg = "checkBestSpecific\t"+user
-    clientSocket.send(serverMsg.encode())
-    response = clientSocket.recv(1024).decode("ascii")
-    
-    if response.split("\t")[0].strip() != "checkBestSpecific":
-        print("Error getting record.")
-        return
-    
-    print("User "+user+" has a best score of:",response.split("\t")[1].strip(),"points\n")
 
 def clientMain():
     serverName = "localhost"
@@ -84,10 +110,8 @@ def clientMain():
         print("""
         1.Play Game
         2.Check Your Best Score 
-        3.Check All Scores
-        4.Check Best Overall Score
-        5.Check Specific Players' Best Score
-        6.Quit
+        3.Check Best Overall Score
+        4.Quit
         """)
         choice = int(input("Enter your choice: "))
                      
@@ -96,11 +120,7 @@ def clientMain():
         elif choice == 2:
             personalBest(clientSocket)
         elif choice == 3:
-            allScores(clientSocket)
-        elif choice == 4:
             bestOverall(clientSocket)
-        elif choice == 5:
-            specificPlayerBest(clientSocket)
         else:
             print("Exiting the Program....")
             clientSocket.close()
