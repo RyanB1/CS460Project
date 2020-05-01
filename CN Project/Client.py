@@ -7,14 +7,14 @@ def login(clientSocket):
     pass = input("Input your password: ")
     message = username + "\t" + pass
     serverMsg = "login"
-    clientSocket.send(serverMsg.encode(message))
+    clientSocket.send(serverMsg.encode())
     
 def register(clientSocket):
     newUsername = input("Input an username: ")
     newPass = input("Input a password: ")
     message = newUsername + "\t" + newPass
     serverMsg = "register"
-    clientSocket.send(serverMsg.encode(message))
+    clientSocket.send(serverMsg.encode())
     
 def alreadyRegistered(clientSocket):
     print("The username you chose was already registered, try again")
@@ -75,6 +75,11 @@ def clientMain():
     clientSocket.connect((serverName, serverPort))
 
     #Login
+    playerStatus = int(input("Welcome to Family Feud! Choose one of the following:\n 1. Login\n 2. Register"))
+    if playerStatus == 1:
+        login(clientSocket)
+    else:
+        register(clientSocket)
 
     #Choosing what player wants to do
     while True:
