@@ -4,16 +4,14 @@ from socket import *
 
 def login(clientSocket):
     username = input("Input your username: ")
-    pass = input("Input your password: ")
-    message = username + "\t" + pass
-    serverMsg = "login"
+    password = input("Input your password: ")
+    serverMsg = "login\t" + username + "\t" + password
     clientSocket.send(serverMsg.encode())
     
 def register(clientSocket):
     newUsername = input("Input an username: ")
     newPass = input("Input a password: ")
-    message = newUsername + "\t" + newPass
-    serverMsg = "register"
+    serverMsg = "register\t" + newUsername + "\t" + newPass
     clientSocket.send(serverMsg.encode())
     
 def alreadyRegistered(clientSocket):
