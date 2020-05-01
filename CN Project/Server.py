@@ -1,5 +1,6 @@
 from socket import *
 from _thread import *
+import random
 
 #Server initialization
 serverPort = 13009
@@ -19,6 +20,18 @@ def createFiles():
     questions.close()
 createFiles()
 
+def pickQuestion():
+    #picks a random question from the file
+    lines = open(questionsFile).read().splitlines()
+    return random.choice(lines)
+
+def playGame(connectionSocket):
+    question = pickQuestion().split("\t")
+    print(question[0] + "was picked\n")
+    #sends question + playgame method to the client
+    toClientMsg = "playGame" + "\t" + question[0]
+    connectionSocket.send(toClientMsg.encode())
+
 def login(connectionSocket,message):
     username = message.split("\t")[1]
     password = message.split("\t")[2]
@@ -31,7 +44,8 @@ def login(connectionSocket,message):
             if account[1].strip() == password:
                 #account was found
                 print("\nA player with username " + username + " logged in")
-                mainMenu()
+                #Sends the username to the main menu function which acts as the login
+                mainMenu(username)
         else:
             wrongLogin(connectionSocket)
 
@@ -67,7 +81,7 @@ def serverMain(connectionSocket,addr):
     method = clientInput.split("\t")[0].strip()
 
     if method == "playGame":
-        playGame(connectionSocket,addr)
+        playGame(connectionSocket)
     elif method == "CheckIndBestRecord":
         checkIndRecord(connectionSocket,clientInput)
     elif method == "CheckBestRecord":
