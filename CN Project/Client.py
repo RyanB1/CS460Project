@@ -1,6 +1,24 @@
 from socket import * 
 
 #def playGame(clientSocket):
+
+def login(clientSocket):
+    username = input("Input your username: ")
+    pass = input("Input your password: ")
+    message = username + "\t" + pass
+    serverMsg = "login"
+    clientSocket.send(serverMsg.encode(message))
+    
+def register(clientSocket):
+    newUsername = input("Input an username: ")
+    newPass = input("Input a password: ")
+    message = newUsername + "\t" + newPass
+    serverMsg = "register"
+    clientSocket.send(serverMsg.encode(message))
+    
+def alreadyRegistered(clientSocket):
+    print("The username you chose was already registered, try again")
+    register(clientSocket)
     
 def personalBest(clientSocket):
     serverMsg = "checkIndividual"
