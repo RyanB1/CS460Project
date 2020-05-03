@@ -1,8 +1,9 @@
 from socket import * 
 
 def playGame(clientSocket):
-    points = numOfQuestions = 0
-    
+    points = 0
+    numOfQuestions = 0
+    correctAnswers = []
     while numOfQuestions != 5:
         wrong = 3
         serverMsg = "playGame\t"
@@ -14,10 +15,18 @@ def playGame(clientSocket):
             return
         
         print(question.split("\t")[1].strip()+"\n")
-        numOfAnswers = int(float(question.split("\t")[2].strip()))
         
+        i = 2
+        while i < len(question.split("\t")):
+            if question.split("\t")[i].strip() == "":
+                break
+            correctAnswers.append(question.split("\t")[i].strip())
+            i+=2
+        numOfAnswers = len(correctAnswers)
+
         while True:
             answer = input("Enter an Answer: ")
+            answer = answer.lower()
             clientSocket.send(answer.encode())
             response = clientSocket.recv(1024).decode("ascii")
             
@@ -27,14 +36,16 @@ def playGame(clientSocket):
                numOfAnswers-=1
                
                if numOfAnswers == 0:
-                   print("You got all answers correct for this question.")
+                   print("\nYou got all answers correct for this question.")
                    print("Point Total:",points)
-                   print("New Question is loading...\n\n")
                    numOfQuestions+=1
                    if numOfQuestions == 5:
                        print("Game over! You have earned a total of",points,"points.")
                        break
+
+                   print("New Question is loading...\n\n")
                    clientSocket.send("NextQuestion".encode())
+                   correctAnswers = []
                    break
                 
                print(numOfAnswers,"answers left to guess.\n") 
@@ -42,13 +53,20 @@ def playGame(clientSocket):
             elif response.split("\t")[0].strip() == "Incorrect":
                wrong-=1
                if(wrong == 0):
+                   print("You have run out of chances.")
                    print("Point Total:",points)
-                   print("You have run out of chances. New question loading...\n\n")
+                   print("The Correct Answers were:",end=" ")
+                   for i in arr:
+                       print(i,end=" ")
+                       
                    numOfQuestions+=1
                    if numOfQuestions == 5:
                        print("Game over! You have earned a total of",points,"points.")
                        break
+                    
+                   print("\nNew question loading...\n\n")
                    clientSocket.send("NextQuestion".encode())
+                   correctAnswers = []
                    break
                
                print("You answered incorrectly. You have",wrong,"chance(s) left\n")
