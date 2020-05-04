@@ -56,7 +56,7 @@ def playGame(clientSocket):
                    print("You have run out of chances.")
                    print("Point Total:",points)
                    print("The Correct Answers were:",end=" ")
-                   for i in arr:
+                   for i in correctAnswers:
                        print(i,end=" ")
                        
                    numOfQuestions+=1
