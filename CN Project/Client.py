@@ -34,6 +34,7 @@ def playGame(clientSocket):
                print("You got an answer correct. You Earned",response.split("\t")[1].strip(),"points.")
                points += int(response.split("\t")[1].strip())
                numOfAnswers-=1
+               correctAnswers.remove(response.split("\t")[0].strip())
                
                if numOfAnswers == 0:
                    print("\nYou got all answers correct for this question.")
@@ -70,6 +71,9 @@ def playGame(clientSocket):
                    break
                
                print("You answered incorrectly. You have",wrong,"chance(s) left\n")
+                
+    serverMsg = username + "\t" + points
+    clientSocket.send(serverMsg.encode())
        
 def login(clientSocket):
     username = input("Input your username: ")
