@@ -1,6 +1,6 @@
 from socket import * 
 
-def playGame(clientSocket):
+def playGame(clientSocket,username):
     points = 0
     numOfQuestions = 0
     correctAnswers = []
@@ -20,7 +20,7 @@ def playGame(clientSocket):
         while i < len(question.split("\t")):
             if question.split("\t")[i].strip() == "":
                 break
-            correctAnswers.append(question.split("\t")[i].strip())
+            correctAnswers.append(question.split("\t")[i].strip().lower())
             i+=2
         numOfAnswers = len(correctAnswers)
 
@@ -30,41 +30,42 @@ def playGame(clientSocket):
             clientSocket.send(answer.encode())
             response = clientSocket.recv(1024).decode("ascii")
             
-            if response.split("\t")[0].strip() == answer:
-               print("You got an answer correct. You Earned",response.split("\t")[1].strip(),"points.")
-               points += int(response.split("\t")[1].strip())
-               numOfAnswers-=1
-               correctAnswers.remove(response.split("\t")[0].strip())
-               
-               if numOfAnswers == 0:
-                   print("\nYou got all answers correct for this question.")
-                   print("Point Total:",points)
-                   numOfQuestions+=1
-                   if numOfQuestions == 5:
-                       print("Game over! You have earned a total of",points,"points.")
-                       break
-
-                   print("New Question is loading...\n\n")
-                   clientSocket.send("NextQuestion".encode())
-                   correctAnswers = []
+            for i in range(0, len(correctAnswers)):
+                if correctAnswers[i] == answer:
+                   print("You got an answer correct. You Earned",response.split("\t")[0].strip(),"points.")
+                   points += int(response.split("\t")[0].strip())
+                   numOfAnswers-=1
+                   correctAnswers.remove(answer)
+                   print(numOfAnswers,"answers left to guess.\n") 
                    break
+               
+            if numOfAnswers == 0:
+                print("You got all answers correct for this question.")
+                print("Point Total:",points)
+                numOfQuestions+=1
+                if numOfQuestions == 5:
+                    print("Game over! You have earned a total of",points,"points.")
+                    break
+
+                print("New Question is loading...\n\n")
+                clientSocket.send("NextQuestion".encode())
+                correctAnswers = []
+                break
                 
-               print(numOfAnswers,"answers left to guess.\n") 
-                
-            elif response.split("\t")[0].strip() == "Incorrect":
+            if response.split("\t")[0].strip() == "Incorrect":
                wrong-=1
                if(wrong == 0):
+                   numOfQuestions+=1
                    print("You have run out of chances.")
                    print("Point Total:",points)
-                   print("The Correct Answers were:",end=" ")
+                   print("The Remaining Correct Answers were:",end=" ")
                    for i in correctAnswers:
-                       print(i,end=" ")
+                       print(i,end=", ")
                        
-                   numOfQuestions+=1
                    if numOfQuestions == 5:
-                       print("Game over! You have earned a total of",points,"points.")
+                       print("\nGame over! You have earned a total of",points,"points.")
                        break
-                    
+                
                    print("\nNew question loading...\n\n")
                    clientSocket.send("NextQuestion".encode())
                    correctAnswers = []
@@ -72,7 +73,7 @@ def playGame(clientSocket):
                
                print("You answered incorrectly. You have",wrong,"chance(s) left\n")
                 
-    serverMsg = "Gameover\t" + username + "\t" + points
+    serverMsg = "Gameover\t" + username + "\t" + str(points)
     clientSocket.send(serverMsg.encode())
        
 def login(clientSocket):
@@ -80,12 +81,14 @@ def login(clientSocket):
     password = input("Input your password: ")
     serverMsg = "login\t" + username + "\t" + password
     clientSocket.send(serverMsg.encode())
+    return username
     
 def register(clientSocket):
     newUsername = input("Input an username: ")
     newPass = input("Input a password: ")
     serverMsg = "register\t" + newUsername + "\t" + newPass
     clientSocket.send(serverMsg.encode())
+    return newUsername
     
 def alreadyRegistered(clientSocket):
     print("The username you chose was already registered, try again")
@@ -123,9 +126,9 @@ def clientMain():
     #Login
     playerStatus = int(input("Welcome to Family Feud! Choose one of the following:\n 1. Login\n 2. Register"))
     if playerStatus == 1:
-        login(clientSocket)
+        username = login(clientSocket)
     else:
-        register(clientSocket)
+        username = register(clientSocket)
 
     #Choosing what player wants to do
     while True:
@@ -138,7 +141,7 @@ def clientMain():
         choice = int(input("Enter your choice: "))
                      
         if choice == 1:
-            playGame(clientSocket)
+            playGame(clientSocket,username)
         elif choice == 2:
             personalBest(clientSocket)
         elif choice == 3:
