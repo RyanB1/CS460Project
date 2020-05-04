@@ -72,7 +72,7 @@ def playGame(clientSocket):
                
                print("You answered incorrectly. You have",wrong,"chance(s) left\n")
                 
-    serverMsg = username + "\t" + points
+    serverMsg = "Gameover\t" + username + "\t" + points
     clientSocket.send(serverMsg.encode())
        
 def login(clientSocket):
