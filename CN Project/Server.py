@@ -1,31 +1,42 @@
 from socket import *
-from _thread import *
 import random
+import os
+from _thread import *
 
-#Server initialization
+# Setup server
 serverPort = 13009
 serverSocket = socket(AF_INET,SOCK_STREAM)
 serverSocket.bind(("",serverPort))
 serverSocket.listen(10)
 print("The server is ready to recieve")
 
-#File names
 loginInfo = "accounts.txt"
 questionsFile = "questions.txt"
+bestRecord = "bestRecord.txt"
+playRecord = "playRecord.txt"
+
+username = ""
+password = ""
 
 def createFiles():
+    #This function simply will create the files if they dont already exist
     accounts = open(loginInfo,"a+")
     accounts.close()
     questions = open(questionsFile,"a+")
     questions.close()
+    bestRecordFile = open(bestRecord,"a+")
+    bestRecordFile.close()
+    playRecordFile = open(playRecord,"a+")
+    playRecordFile.close()
+    
 createFiles()
 
 def pickQuestion():
-    #picks a random question from the file
     lines = open(questionsFile).read().splitlines()
     return random.choice(lines)
 
-def playGame(connectionSocket):
+def playGame(connectionSocket,username):
+    
     question = pickQuestion()
     print(question.split("\t")[0],"was picked\n")
     #sends question + playgame method to the client
@@ -36,11 +47,17 @@ def playGame(connectionSocket):
     
     while True:
         answer = connectionSocket.recv(1024).decode("ascii")
+        print("Player sent",answer)
         if answer == "NextQuestion":
+            print("Player went on to next question")
+            serverMain(connectionSocket)
+            #question = pickQuestion()
             break
         if answer.split("\t")[0].strip() == "Gameover":
-            recordFile = open("playRecord.txt","a+")
+            print("Game ended")
+            recordFile = open(playRecord,"a+")
             record = answer.split("\t")[1].strip() + "\t" + answer.split("\t")[2].strip() + "\n"
+            fileChanges(record)
             recordFile.write(record)
             recordFile.close()
             return
@@ -52,6 +69,7 @@ def playGame(connectionSocket):
             else:
                 msg = "Incorrect"
         connectionSocket.send(msg.encode())
+    
 
 def login(connectionSocket,message):
     username = message.split("\t")[1]
@@ -65,57 +83,108 @@ def login(connectionSocket,message):
             if account[1].strip() == password:
                 #account was found
                 print("\nA player with username " + username + " logged in")
-                #Sends the username to the main menu function which acts as the login
-                mainMenu(username)
-        else:
-            wrongLogin(connectionSocket)
+                #I send the username to the main menu to indicate he was logged in
 
-def wrongLogin(connectionSocket):
-    print("\nSomeone used the wrong login information")
-    toClientMsg = "wrongLogin"
-    connectionSocket.send(toClientMsg.encode())
+                toServerMsg = "loggedIn"
+                connectionSocket.send(toServerMsg.encode())
+                return username
+                
+            else:
+                print("\nSomeone used the wrong login information")
+                toClientMsg = "wrongLogin"
+                connectionSocket.send(toClientMsg.encode())
+                
 
 def register(connectionSocket,message):
-    print(message)
     username = message.split("\t")[1]
     password = message.split("\t")[2]
+    print(username)
     for line in open(loginInfo).readlines():
         account = line.split("\t")
-        print(account[0] + username)
         #Check to see if the account already exists
         if account[0].strip() == username:
-            accountExists(connectionSocket)
-            return
+            print("\nThe account with username ", username," already exitsts")
+            toClientMsg = "alreadyRegistered"
+            connectionSocket.send(toClientMsg.encode())
+            
+            return username
         
     addAccount = open(loginInfo,"a+")
     addAccount.write(username + "\t" + password + "\n")
     addAccount.close()
-    print("\nAccount with username " + username + " added")
 
-def accountExists(connectionSocket):
-    print("\nThe account with username " + username + " already exitsts")
-    toClientMsg = "alreadyRegistered"
+    toClientMsg = "Registered"
     connectionSocket.send(toClientMsg.encode())
-                
-def serverMain(connectionSocket,addr):
-    clientInput = connectionSocket.recv(1024).decode("ascii")
-    method = clientInput.split("\t")[0].strip()
+    
 
-    if method == "playGame":
-        playGame(connectionSocket)
-    elif method == "CheckIndBestRecord":
-        checkIndRecord(connectionSocket,clientInput)
-    elif method == "CheckBestRecord":
-        checkBest(connectionSocket,clientInput)
-    elif method == "register":
-        register(connectionSocket,clientInput)
-    elif method == "login":
-        login(connectionSocket,clientInput)
+    print("\nAccount with username " + username + " added")
+    return
+
+def checkIndRecord(connectionSocket,username):
+    
+    bestScore = 0
+    for line in open(playRecord).readlines():
+        score = line.split("\t")
+        if username == score[0]:
+            if int(score[1].strip()) > int(bestScore):
+                bestScore = score[1].strip()
+    print(username + " best score was ",bestScore)
+    toClientMsg = "CheckIndBestRecord" + "\t" + bestScore
+    connectionSocket.send(toClientMsg.encode())
+            
+
+def checkBest(connectionSocket):
+    file = open(bestRecord,"r")
+    bestScore = file.read()
+    print("The best score is ",bestScore)
+    toClientMsg = "CheckBestRecord" + "\t" + bestScore
+    connectionSocket.send(toClientMsg.encode())
+
+def fileChanges(record):
+    #best overall
+    bestRecordFiler = open(bestRecord,"r")
+    score = record.split("\t")[1].strip()
+    print("score",score)
+    username = record.split("\t")[0].strip()
+    print(bestRecordFiler.read().strip())
+    if (score > bestRecordFiler.read().strip()):
+        print("new best score")
+        bestRecordFiler.close()
+        os.remove(bestRecord)
+        bestRecordFileO = open(bestRecord,"a+")
+        bestRecordFileO.write(score)
+        bestRecordFileO.close()
+    
+
+def serverMain(connectionSocket):
+    username = ""
+    while True:
+        clientInput = connectionSocket.recv(1024).decode("ascii")
+        method = clientInput.split("\t")[0].strip()
+        print(method)
+        if method == "playGame":
+            playGame(connectionSocket,username)
+        elif method == "CheckIndBestRecord":
+            checkIndRecord(connectionSocket,username)
+        elif method == "CheckBestRecord":
+            checkBest(connectionSocket)
+        elif method == "register":
+            username = register(connectionSocket,clientInput)
+        elif method == "login":
+            username = login(connectionSocket,clientInput)
 
 def main():
     while True:
         connectionSocket, addr = serverSocket.accept()
         print(addr,"connected")
-        start_new_thread(serverMain, (connectionSocket,addr,))
+        # sentence = connectionSocket.recv(1024)
+        # print("What we received is ",sentence)
+        # capitalizedSentence = sentence.upper()
+
+        start_new_thread(serverMain, (connectionSocket,))
+        # connectionSocket.send("Guess my number between 0-100")
+
+        # connectionSocket.close()
 
 main()
+
