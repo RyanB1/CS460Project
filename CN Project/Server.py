@@ -26,11 +26,32 @@ def pickQuestion():
     return random.choice(lines)
 
 def playGame(connectionSocket):
-    question = pickQuestion().split("\t")
-    print(question[0] + "was picked\n")
+    question = pickQuestion()
+    print(question.split("\t")[0],"was picked\n")
     #sends question + playgame method to the client
-    toClientMsg = "playGame" + "\t" + question[0]
+    toClientMsg = "playGame\t"
+    for i in range(0,len(question.split("\t"))-1):
+        toClientMsg += question.split("\t")[i].strip()+"\t"
     connectionSocket.send(toClientMsg.encode())
+    
+    while True:
+        answer = connectionSocket.recv(1024).decode("ascii")
+        if answer == "NextQuestion":
+            break
+        if answer.split("\t")[0].strip() == "Gameover":
+            recordFile = open("playRecord.txt","a+")
+            record = answer.split("\t")[1].strip() + "\t" + answer.split("\t")[2].strip() + "\n"
+            recordFile.write(record)
+            recordFile.close()
+            return
+
+        for i in range(1,len(question.split("\t"))):
+            if question.split("\t")[i].lower() == answer:
+                msg = question.split("\t")[i+1]
+                break
+            else:
+                msg = "Incorrect"
+        connectionSocket.send(msg.encode())
 
 def login(connectionSocket,message):
     username = message.split("\t")[1]
