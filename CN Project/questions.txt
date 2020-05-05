@@ -1,14 +1,14 @@
-Name a reason you might get rid of an old family heirloom.	Broken	29	Ugly	22	Divorce	18	Sell	12	Too much stuf	10	Family feud	5	Moving	2
+Name a reason you might get rid of an old family heirloom.	Broken	29	Ugly	22	Divorce	18	Sell	12	Too much stuff	10	Family feud	5	Moving	2
 Where do kids nowadays spend most of their time?	Room	28	School	22	Internet	16	Mall	12	friend's house	10	park	4	work	4
 Tell me something many people do just once a week.	Church	35	Groceries	24	Laundry	12	Clean House	6	Sleep In	6	Eat Out	4
 Tell me something you can buy that costs a dollar or less.	Fruit	29	Fast Food	23	Soft Drink	17	Newspaper	10	Stamp	6	Gum	4
 Name a country that speaks Spanish.	Spain	38	Mexico	24	United States	10	Cuba	10	Argentina	4	Costa Rica	3	Chile	3	Colombia	3	Guatemala	2
 Name a liquid in your kitchen that you hope no one ever accidentally drinks.	Soap	46	Vinegar	30	Cooking Oil	16	Soy sauce	4	Bacon grease	2
 Name another word for "book."	Novel	55	story	16	paperback	10	pamphlet	4	tome	4	volume	3	publication	3
-What is the most stressful thing in the life a 25-year-old woman?	love life28	job	26	fiances	17	family	13	school	friends	3	clothes	2
+What is the most stressful thing in the life a 25-year-old woman?	love life	28	job	26	fiances	17	family	13	school	friends	3	clothes	2
 Name a specific piece of furniture that might be handmade.	table	41	chair	31	shelf	12	dresser	5	bed	2	cabinet	2	bench	2
 Tell me whose name a young man might have in his tattoo.	mom	33	wife	25	child	14	god	10	father	6	grandparent	5	pet	2
-Name a character from Game of Thrones.	jon snow	26	Daenerys "Khaleesi" Targaryen	23	Arya stark	22	Daenerys "Khaleesi" Targaryen	15	Cersai Lannister	7	Jaime Lannister	2	Sana Stark	2	Ned stark	2
+Name a character from Game of Thrones.	jon snow	26	Daenerys "Khaleesi" Targaryen	23	Arya stark	22	Cersai Lannister	7	Jaime Lannister	2	Sana Stark	2	Ned stark	2
 Name something you always have to keep plugged in.	tv	33	phone	25	computer	24	lamp	11	headphones	2	computer mouse	2
 Name a Harry Potter character.	harry potter	52	hermione	16	ron	14	fred	5	george	5	dumbledore	3	snape	2	hagrid	2
 Name a fruit you might eat in the morning.	banana	25	grapefruit	22	strawberry	19	apple	15	orange	12	melon	3	peach	2

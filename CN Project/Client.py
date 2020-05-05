@@ -85,7 +85,7 @@ def login(clientSocket):
         print(serverMsg)
         clientSocket.send(serverMsg.encode())
         returnedMsg = clientSocket.recv(1024).decode("ascii")
-        print(returnedMsg)
+        #print(returnedMsg)
         if returnedMsg == "loggedIn":
             logged = True
         else:
@@ -141,7 +141,7 @@ def clientMain():
     clientSocket.connect((serverName, serverPort))
 
     #Login
-    playerStatus = int(input("Welcome to Family Feud! Choose one of the following:\n 1. Login\n 2. Register"))
+    playerStatus = int(input("Welcome to Family Feud! Choose one of the following:\n 1. Login\n 2. Register\nEnter your choice: "))
     if playerStatus == 1:
         username = login(clientSocket)
     else:

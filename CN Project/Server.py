@@ -121,7 +121,6 @@ def register(connectionSocket,message):
     return
 
 def checkIndRecord(connectionSocket,username):
-    
     bestScore = 0
     for line in open(playRecord).readlines():
         score = line.split("\t")
@@ -129,7 +128,7 @@ def checkIndRecord(connectionSocket,username):
             if int(score[1].strip()) > int(bestScore):
                 bestScore = score[1].strip()
     print(username + " best score was ",bestScore)
-    toClientMsg = "CheckIndBestRecord" + "\t" + bestScore
+    toClientMsg = "CheckIndBestRecord" + "\t" + str(bestScore)
     connectionSocket.send(toClientMsg.encode())
             
 
@@ -172,19 +171,17 @@ def serverMain(connectionSocket):
             username = register(connectionSocket,clientInput)
         elif method == "login":
             username = login(connectionSocket,clientInput)
+        else:
+            print("Ending Program...")
+            connectionSocket.close()
+            return
 
 def main():
-    while True:
-        connectionSocket, addr = serverSocket.accept()
-        print(addr,"connected")
-        # sentence = connectionSocket.recv(1024)
-        # print("What we received is ",sentence)
-        # capitalizedSentence = sentence.upper()
-
-        start_new_thread(serverMain, (connectionSocket,))
-        # connectionSocket.send("Guess my number between 0-100")
-
-        # connectionSocket.close()
+    
+    connectionSocket, addr = serverSocket.accept()
+    print(addr,"connected")
+    start_new_thread(serverMain, (connectionSocket,))
+    
 
 main()
 
