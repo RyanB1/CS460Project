@@ -77,23 +77,40 @@ def playGame(clientSocket,username):
     clientSocket.send(serverMsg.encode())
        
 def login(clientSocket):
-    username = input("Input your username: ")
-    password = input("Input your password: ")
-    serverMsg = "login\t" + username + "\t" + password
-    clientSocket.send(serverMsg.encode())
+    logged = False
+    while not(logged):
+        username = input("Input your username: ")
+        password = input("Input your password: ")
+        serverMsg = "login\t" + username + "\t" + password
+        print(serverMsg)
+        clientSocket.send(serverMsg.encode())
+        returnedMsg = clientSocket.recv(1024).decode("ascii")
+        print(returnedMsg)
+        if returnedMsg == "loggedIn":
+            logged = True
+        else:
+            print("Incorrect login information")
+            username = ""
+            password = ""
+            #clientSocket.recv(1024).decode("ascii")
     return username
     
 def register(clientSocket):
-    newUsername = input("Input an username: ")
-    newPass = input("Input a password: ")
-    serverMsg = "register\t" + newUsername + "\t" + newPass
-    clientSocket.send(serverMsg.encode())
+    registered = False
+    while not(registered):
+        newUsername = input("Input an username: ")
+        newPass = input("Input a password: ")
+        serverMsg = "register\t" + newUsername + "\t" + newPass
+        clientSocket.send(serverMsg.encode())
+        if clientSocket.recv(1024).decode("ascii") == "alreadyRegistered":
+            print("The username you chose was already registered, try again")
+            newUsername = ""
+            newPass = ""
+        else:
+            registered = True
+            print("Your account was successfully registered")
     return newUsername
-    
-def alreadyRegistered(clientSocket):
-    print("The username you chose was already registered, try again")
-    register(clientSocket)
-    
+       
 def personalBest(clientSocket):
     serverMsg = "CheckIndBestRecord\t"
     clientSocket.send(serverMsg.encode())
