@@ -82,11 +82,12 @@ def login(clientSocket):
         username = input("Input your username: ")
         password = input("Input your password: ")
         serverMsg = "login\t" + username + "\t" + password
-        print(serverMsg)
+        #print(serverMsg)
         clientSocket.send(serverMsg.encode())
         returnedMsg = clientSocket.recv(1024).decode("ascii")
         #print(returnedMsg)
         if returnedMsg == "loggedIn":
+            print("Successfully Logged in")
             logged = True
         else:
             print("Incorrect login information")
