@@ -39,7 +39,7 @@ def pickQuestion():
     while True:
         randomNum = random.randint(1,50)
         pickedNumArray.append(randomNum)
-        if randomNum not in pickedNumArray
+        if randomNum not in pickedNumArray:
             break
             
     f = open(questionsFile)
