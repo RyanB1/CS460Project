@@ -32,8 +32,21 @@ def createFiles():
 createFiles()
 
 def pickQuestion():
-    lines = open(questionsFile).read().splitlines()
-    return random.choice(lines)
+    pickedNumArray = [0] * 50
+    randomNum = 0
+    
+    # keep picking a random number until it is a number not in pickedNumArray
+    while True:
+        randomNum = random.randint(1,50)
+        pickedNumArray.append(randomNum)
+        if randomNum not in pickedNumArray
+            break
+            
+    f = open(questionsFile)
+    lines = f.readlines()
+    return lines[randomNum]
+    #lines = open(questionsFile).read().splitlines()
+    #return random.choice(lines)
 
 def playGame(connectionSocket,username):
     
