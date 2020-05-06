@@ -30,16 +30,14 @@ createFiles()
 
 def pickQuestion():
     pickedNumArray = [0] * 50
-    randomNum = 0
-    pickedNum = 0
+    randomNum = random.randint(1,50)
+    pickedNum = randomNum
     
     # keep picking a random number until it is a number not in pickedNumArray
     while randomNum not in pickedNumArray:
         randomNum = random.randint(1,50)
         pickedNumArray.append(randomNum)
         pickedNum = randomNum
-        
-    randomNum = random.randint(1,50)
             
     f = open(questionsFile)
     lines = f.readlines()
