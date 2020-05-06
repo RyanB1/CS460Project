@@ -31,17 +31,19 @@ createFiles()
 def pickQuestion():
     pickedNumArray = [0] * 50
     randomNum = 0
+    pickedNum = 0
     
     # keep picking a random number until it is a number not in pickedNumArray
     while randomNum not in pickedNumArray:
         randomNum = random.randint(1,50)
         pickedNumArray.append(randomNum)
+        pickedNum = randomNum
         
     randomNum = random.randint(1,50)
             
     f = open(questionsFile)
     lines = f.readlines()
-    return lines[randomNum]
+    return lines[pickedNum]
  
 def playGame(connectionSocket,username):
     question = pickQuestion()
