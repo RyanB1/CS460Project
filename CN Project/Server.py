@@ -39,6 +39,8 @@ def pickQuestion():
     while randomNum not in pickedNumArray:
         randomNum = random.randint(1,50)
         pickedNumArray.append(randomNum)
+        
+    randomNum = random.randint(1,50)
             
     f = open(questionsFile)
     lines = f.readlines()
