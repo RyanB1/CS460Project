@@ -36,11 +36,9 @@ def pickQuestion():
     randomNum = 0
     
     # keep picking a random number until it is a number not in pickedNumArray
-    while True:
+    while randomNum not in pickedNumArray:
         randomNum = random.randint(1,50)
         pickedNumArray.append(randomNum)
-        if randomNum not in pickedNumArray:
-            break
             
     f = open(questionsFile)
     lines = f.readlines()
