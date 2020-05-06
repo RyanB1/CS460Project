@@ -12,7 +12,6 @@ print("The server is ready to recieve")
 
 loginInfo = "accounts.txt"
 questionsFile = "questions.txt"
-#bestRecord = "bestRecord.txt"
 playRecord = "playRecord.txt"
 
 username = ""
@@ -24,8 +23,6 @@ def createFiles():
     accounts.close()
     questions = open(questionsFile,"a+")
     questions.close()
-    #bestRecordFile = open(bestRecord,"a+")
-    #bestRecordFile.close()
     playRecordFile = open(playRecord,"a+")
     playRecordFile.close()
     
@@ -45,11 +42,8 @@ def pickQuestion():
     f = open(questionsFile)
     lines = f.readlines()
     return lines[randomNum]
-    #lines = open(questionsFile).read().splitlines()
-    #return random.choice(lines)
-
+ 
 def playGame(connectionSocket,username):
-    
     question = pickQuestion()
     print(question.split("\t")[0],"was picked\n")
     #sends question + playgame method to the client
@@ -63,14 +57,11 @@ def playGame(connectionSocket,username):
         print("Player sent",answer)
         if answer == "NextQuestion":
             print("Player went on to next question")
-            #serverMain(connectionSocket)
-            #question = pickQuestion()
             break
         if answer.split("\t")[0].strip() == "Gameover":
             print("Game ended")
             recordFile = open(playRecord,"a+")
             record = answer.split("\t")[1].strip() + "\t" + answer.split("\t")[2].strip() + "\n"
-            #fileChanges(record)
             recordFile.write(record)
             recordFile.close()
             return
@@ -88,7 +79,7 @@ def login(connectionSocket,message):
     username = message.split("\t")[1]
     password = message.split("\t")[2]
     print("user logging in")
-    #loginFile = open(loginInfo,"r")
+    
     for line in open(loginInfo).readlines():
         account = line.split("\t")
         #first one checks for username, the second ensures the password
@@ -155,22 +146,6 @@ def checkBest(connectionSocket):
     toClientMsg = "CheckBestRecord" + "\t" + str(bestScore)
     connectionSocket.send(toClientMsg.encode())
 
-##def fileChanges(record):
-##    #best overall
-##    bestRecordFiler = open(bestRecord,"r")
-##    score = record.split("\t")[1].strip()
-##    print("score",score)
-##    username = record.split("\t")[0].strip()
-##    print(bestRecordFiler.read().strip())
-##    if (score > bestRecordFiler.read().strip()):
-##        print("new best score")
-##        bestRecordFiler.close()
-##        os.remove(bestRecord)
-##        bestRecordFileO = open(bestRecord,"a+")
-##        bestRecordFileO.write(score)
-##        bestRecordFileO.close()
-    
-
 def serverMain(connectionSocket):
     while True:
         clientInput = connectionSocket.recv(1024).decode("ascii")
@@ -191,12 +166,10 @@ def serverMain(connectionSocket):
             connectionSocket.close()
             return
 
-def main():
-    
+def main(): 
     connectionSocket, addr = serverSocket.accept()
     print(addr,"connected")
     start_new_thread(serverMain, (connectionSocket,))
-    
-
+   
 main()
 
