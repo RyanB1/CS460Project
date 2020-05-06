@@ -27,15 +27,15 @@ def createFiles():
     playRecordFile.close()
     
 createFiles()
-
+pickedNumArray = []
 def pickQuestion():
-    pickedNumArray = [0] * 50
-    randomNum = random.randint(1,50)
+    
+    randomNum = random.randint(0,49)
     pickedNum = randomNum
     
     # keep picking a random number until it is a number not in pickedNumArray
     while randomNum not in pickedNumArray:
-        randomNum = random.randint(1,50)
+        randomNum = random.randint(0,49)
         pickedNumArray.append(randomNum)
         pickedNum = randomNum
             
@@ -62,6 +62,12 @@ def playGame(connectionSocket,username):
             print("Game ended")
             recordFile = open(playRecord,"a+")
             record = answer.split("\t")[1].strip() + "\t" + answer.split("\t")[2].strip() + "\n"
+            #empty array
+            pickedNumArray.pop(0)
+            pickedNumArray.pop(0)
+            pickedNumArray.pop(0)
+            pickedNumArray.pop(0)
+            pickedNumArray.pop(0)
             recordFile.write(record)
             recordFile.close()
             return
